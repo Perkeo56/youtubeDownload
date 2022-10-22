@@ -151,7 +151,7 @@ def root_window():
     root.resizable(0, 0)
 
     # Hintergrund
-    background_image = tk.PhotoImage(file=resource_path("baum_800x600.png"))
+    background_image = tk.PhotoImage(file=resource_path("/home/flo/PycharmProjects/youtubeDownloadOnline/baum_800x600.png"))
     label_background = tk.Label(root, image=background_image)
     label_background.place(x=0, y=0)
 
