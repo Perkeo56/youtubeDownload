@@ -189,6 +189,8 @@ def root_window():
     error_field.place(x=10, y=300)
 
     root.title("Youtube Downloader")
+    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file="/home/flo/PycharmProjects/youtubeDownloadOnline/download-button.png"))
+    #root.iconphoto(tk.PhotoImage("baum_800x600.png"))
     log("Fenster initialisation abgeschlossen.", "[INFO]")
     init = False
     version_thread = threading.Thread(target=version_check)
