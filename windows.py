@@ -193,8 +193,8 @@ def root_window():
     error_field.place(x=10, y=300)
 
     root.title("Youtube Downloader")
-    root.iconbitmap(resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}download-button.png"))
-    #root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}download-button.ico")))
+    #root.iconbitmap(resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}download-button.png"))
+    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}download-button.png")))
     #root.iconphoto(tk.PhotoImage("baum_800x600.png"))
     log("Fenster initialisation abgeschlossen.", "[INFO]")
     init = False
