@@ -44,7 +44,22 @@ def os_specific():
     os_infos = {"type": os.name}
     try:
         from win32com.shell import shell, shellcon
+        from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, EnumKey, QueryValueEx
         os_infos['home_directory'] = shell.SHGetFolderPath(0, shellcon.CSIDL_MUSIC, None, 0)
+        aKey = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+        aReg = ConnectRegistry(None, HKEY_CURRENT_USER)
+
+        print(r"*** Reading from %s ***" % aKey)
+
+        aKey = OpenKey(aReg, aKey)
+        for i in range(1024):
+            try:
+                asubkey_name = EnumKey(aKey, i)
+                asubkey = OpenKey(aKey, asubkey_name)
+                val = QueryValueEx(asubkey, "DisplayName")
+                print(val)
+            except EnvironmentError:
+                break
     except ImportError as e:
         os_infos['home_directory'] = os.path.expanduser("~")
     os_infos["path_seperator"] = "/" if os_infos["type"] == "posix" else "\\"
