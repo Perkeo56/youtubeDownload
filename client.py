@@ -22,6 +22,12 @@ def get_file(os_infos, vid_url, download_format, is_playlist=False, name_of_play
         if "/" in filename:
             vorne, hinten = filename.split("/", 1)
             filename = vorne + "-" + hinten
+        elif "\'" in filename:
+            vorne, hinten = filename.split("\'", 1)
+            filename = vorne + "-" + hinten
+        elif '\"' in filename:
+            vorne, hinten = filename.split('\"', 1)
+            filename = vorne + hinten
         elif "\\" in filename:
             vorne, hinten = filename.split("\\", 1)
             filename = vorne + "-" + hinten
@@ -33,7 +39,7 @@ def get_file(os_infos, vid_url, download_format, is_playlist=False, name_of_play
         if not os.path.exists(path):
             os.makedirs(path, exist_ok=True)
     else:
-        path = f"{os_infos['path']}{os_infos['path_seperator']}{download_format}{os_infos['path_seperator']}Einzeln{os_infos['path_seperator']}"
+        path = f"{os_infos['path']}{os_infos['path_seperator']}{download_format}{os_infos['path_seperator']}Einzeln"
 
     if os.path.exists(path+os_infos["path_seperator"]+track_number+" "+filename) or os.path.exists(path+os_infos["path_seperator"]+filename):
         return True
@@ -50,5 +56,7 @@ def get_file(os_infos, vid_url, download_format, is_playlist=False, name_of_play
         with open(path+os_infos["path_seperator"]+track_number+" "+filename, 'wb') as f:
             shutil.copyfileobj(response.raw, f)
     else:
+        print(path)
+        print(path+os_infos["path_seperator"]+filename)
         with open(path+os_infos["path_seperator"]+filename, 'wb') as f:
             shutil.copyfileobj(response.raw, f)

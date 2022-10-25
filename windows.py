@@ -38,8 +38,8 @@ def version_check():
         webbrowser.open_new_tab(url)
         os.kill(os.getpid(), signal.SIGKILL)
 
-def download_init(url):
-    global pb_text, pb, download_format, download_button, url_entry
+def os_specific():
+    global pb_text, pb, download_format, download_button, url_entry, os_infos
     # Musik Paths Posix/Windows
     os_infos = {"type": os.name}
     try:
@@ -53,11 +53,14 @@ def download_init(url):
     else:
         os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Music{os_infos['path_seperator']}YoutubeDownload"
 
+
+
+def download_init(url):
+    global pb_text, pb, download_format, download_button, url_entry, os_infos
     path_einzeln = f"{os_infos['path']}{os_infos['path_seperator']}{download_format.get()}{os_infos['path_seperator']}Einzeln{os_infos['path_seperator']}"
     #os.makedirs(os_infos["path"], exist_ok=True) #durch nächsten unnötig
     os.makedirs(path_einzeln, exist_ok=True)
     log(os_infos['path'], "[INFO]")
-
     if "playlist" in url.lower():
         playlist = Playlist(url)
         print('Number of videos in playlist: %s' % len(playlist.video_urls))
@@ -144,14 +147,15 @@ def update_error_message(exception):
 
 
 def root_window():
-    global url_entry, pb_text, pb, download_format, download_button, error_field, init
+    global url_entry, pb_text, pb, download_format, download_button, error_field, init, os_infos
     log("Fenster initialisation.", "[INFO]")
+    os_specific()
     root = tk.Tk()
     root.geometry("800x500")
     root.resizable(0, 0)
 
     # Hintergrund
-    background_image = tk.PhotoImage(file=resource_path("/home/flo/PycharmProjects/youtubeDownloadOnline/baum_800x600.png"))
+    background_image = tk.PhotoImage(file=resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}baum_800x600.png"))
     label_background = tk.Label(root, image=background_image)
     label_background.place(x=0, y=0)
 
@@ -189,7 +193,8 @@ def root_window():
     error_field.place(x=10, y=300)
 
     root.title("Youtube Downloader")
-    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file="/home/flo/PycharmProjects/youtubeDownloadOnline/download-button.png"))
+    root.iconbitmap(resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}download-button.ico"))
+    #root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=resource_path(f"{os_infos['home_directory']}{os_infos['path_seperator']}PycharmProjects{os_infos['path_seperator']}youtubeDownloadOnline{os_infos['path_seperator']}download-button.ico")))
     #root.iconphoto(tk.PhotoImage("baum_800x600.png"))
     log("Fenster initialisation abgeschlossen.", "[INFO]")
     init = False
