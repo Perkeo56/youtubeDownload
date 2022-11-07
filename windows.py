@@ -29,14 +29,18 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 def version_check():
+    global os_infos
     # Version check
     time.sleep(2)
     version = requests.get("http://api.flocloud.at/youtubeDownload/version")
     if not version.content == b"""{"version":"1.0\\n"}""":
         showinfo(title="Neue Version verfügbar!", message="Eine neue Version steht zum Download zur Verfügung.")
-        url = 'https://storage.flocloud.at/ytd/'
+        if os_infos['type'] == "posix":
+            url = 'https://github.com/Perkeo56/youtubeDownload/raw/master/dist/youtubeDownloaderBin'
+        else:
+            url = "https://github.com/Perkeo56/youtubeDownload/raw/master/dist/youtubeDownloader.exe"
         webbrowser.open_new_tab(url)
-        os.kill(os.getpid(), signal.SIGKILL)
+        os.kill(os.getpid(), signal.SIGTERM)
 
 def os_specific():
     global pb_text, pb, download_format, download_button, url_entry, os_infos
