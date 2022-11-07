@@ -15,9 +15,9 @@ def get_file(os_infos, vid_url, download_format, is_playlist=False, name_of_play
         author = yt.author
 
     stream = yt.streams.get_highest_resolution()
-    file = f"{author}- {stream.title}"
+    file = f"{author} - {stream.title}"
     filename = f"{file}.{download_format}"
-    #/ und \\ ersetzen durch -
+    #/ und \\ und : ersetzen durch -
     for n in range(0, 9):
         if "/" in filename:
             vorne, hinten = filename.split("/", 1)
@@ -31,6 +31,9 @@ def get_file(os_infos, vid_url, download_format, is_playlist=False, name_of_play
         elif "\\" in filename:
             vorne, hinten = filename.split("\\", 1)
             filename = vorne + "-" + hinten
+        elif ":" in filename:
+            vorne, hinten = filename.split(":", 1)
+            filename = vorne + " -" + hinten
         else:
             break
 
@@ -42,14 +45,15 @@ def get_file(os_infos, vid_url, download_format, is_playlist=False, name_of_play
         path = f"{os_infos['path']}{os_infos['path_seperator']}{download_format}{os_infos['path_seperator']}Einzeln"
 
     if os.path.exists(path+os_infos["path_seperator"]+track_number+" "+filename) or os.path.exists(path+os_infos["path_seperator"]+filename):
+        log("Datei bereits vorhanden.", "[WARNING]")
         return True
-
+    log(filename, "[INFO]")
     url = "http://api.flocloud.at/youtubeDownload"
     parameters = {"url": vid_url, "download_format": download_format, "name_of_playlist": name_of_playlist,
                   "track_number": track_number}
     response = requests.get(url, params=parameters, stream=True)
-    print(response.status_code)
-    print(response.url)
+    #print(response.status_code)
+    #print(response.url)
 
 
     if is_playlist:
