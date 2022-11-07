@@ -42,31 +42,27 @@ def os_specific():
     global pb_text, pb, download_format, download_button, url_entry, os_infos
     # Musik Paths Posix/Windows
     os_infos = {"type": os.name}
+    os_infos["path_seperator"] = "/" if os_infos["type"] == "posix" else "\\"
     try:
         from win32com.shell import shell, shellcon
         from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, EnumKey, QueryValueEx
-        os_infos['home_directory'] = shell.SHGetFolderPath(0, shellcon.CSIDL_MUSIC, None, 0)
-        aKey = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-        aReg = ConnectRegistry(None, HKEY_CURRENT_USER)
+        access_registry = ConnectRegistry(None, HKEY_CURRENT_USER)
+        access_key = OpenKey(access_registry, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
+        print(QueryValueEx(access_key, "My Music"))
+        os_infos['music_directory_windows'] = QueryValueEx(access_key, "My Music")[0]
+        if not os.path.exists(f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload"):
+            os.mkdir(f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload")
+        os_infos['path'] = f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload"
+        print(os_infos['path'])
 
-        print(r"*** Reading from %s ***" % aKey)
-
-        aKey = OpenKey(aReg, aKey)
-        for i in range(1024):
-            try:
-                asubkey_name = EnumKey(aKey, i)
-                asubkey = OpenKey(aKey, asubkey_name)
-                val = QueryValueEx(asubkey, "DisplayName")
-                print(val)
-            except EnvironmentError:
-                break
     except ImportError as e:
         os_infos['home_directory'] = os.path.expanduser("~")
-    os_infos["path_seperator"] = "/" if os_infos["type"] == "posix" else "\\"
-    if os.path.exists(f"{os_infos['home_directory']}{os_infos['path_seperator']}Musik"):
-        os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Musik{os_infos['path_seperator']}YoutubeDownload"
-    else:
-        os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Music{os_infos['path_seperator']}YoutubeDownload"
+        if os.path.exists(f"{os_infos['home_directory']}{os_infos['path_seperator']}Musik"):
+            os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Musik{os_infos['path_seperator']}YoutubeDownload"
+        else:
+            os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Music{os_infos['path_seperator']}YoutubeDownload"
+
+        print(os_infos['path'])
 
 
 
