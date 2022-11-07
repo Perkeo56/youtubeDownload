@@ -43,26 +43,26 @@ def os_specific():
     # Musik Paths Posix/Windows
     os_infos = {"type": os.name}
     os_infos["path_seperator"] = "/" if os_infos["type"] == "posix" else "\\"
-    try:
-        from win32com.shell import shell, shellcon
-        from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, EnumKey, QueryValueEx
-        access_registry = ConnectRegistry(None, HKEY_CURRENT_USER)
-        access_key = OpenKey(access_registry, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
-        print(QueryValueEx(access_key, "My Music"))
-        os_infos['music_directory_windows'] = QueryValueEx(access_key, "My Music")[0]
-        if not os.path.exists(f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload"):
-            os.mkdir(f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload")
-        os_infos['path'] = f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload"
-        print(os_infos['path'])
+    os_infos['home_directory'] = os.path.expanduser("~")
+    if os_infos['type'] != "posix":
+        try:
+            #from win32com.shell import shell, shellcon
+            from winreg import ConnectRegistry, HKEY_CURRENT_USER, OpenKey, EnumKey, QueryValueEx
+            access_registry = ConnectRegistry(None, HKEY_CURRENT_USER)
+            access_key = OpenKey(access_registry, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders")
+            os_infos['music_directory_windows'] = QueryValueEx(access_key, "My Music")[0]
+            if not os.path.exists(f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload"):
+                os.mkdir(f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload")
+            os_infos['path'] = f"{os_infos['music_directory_windows']}{os_infos['path_seperator']}YoutubeDownload"
 
-    except ImportError as e:
-        os_infos['home_directory'] = os.path.expanduser("~")
+        except Exception as e:
+            log(e, "[ERROR] Windows Registry reading: ")
+
+    else:
         if os.path.exists(f"{os_infos['home_directory']}{os_infos['path_seperator']}Musik"):
             os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Musik{os_infos['path_seperator']}YoutubeDownload"
         else:
             os_infos["path"] = f"{os_infos['home_directory']}{os_infos['path_seperator']}Music{os_infos['path_seperator']}YoutubeDownload"
-
-        print(os_infos['path'])
 
 
 
@@ -81,8 +81,8 @@ def download_init(url):
         for s in playlist.video_urls:
             log(f"Download {i} gestartet.", "[INFO]")
             try:
-                if not get_file(os_infos, s, download_format.get(), True, playlist.title, str(i)):
-                    log("Fehler beim Herunterladen.", "[ERROR]")
+                get_file(os_infos, s, download_format.get(), True, playlist.title, str(i))
+                    #log("Fehler beim Herunterladen.", "[ERROR]")
                     #print("Fehler beim Herunterladen.")
             except pytube.exceptions.RegexMatchError as r:
                 error_field['text'] = update_error_message("Eingabe konnte nicht gelesen werden.")
@@ -106,8 +106,8 @@ def download_init(url):
     else:
         pb_text['text'] = update_progress_label(0, 1)
         try:
-            if not get_file(os_infos, url, download_format.get()):
-                log("Fehler beim Herunterladen.", "[ERROR]")
+            get_file(os_infos, url, download_format.get())
+                #log("Fehler beim Herunterladen.", "[ERROR]")
                 #print("Fehler beim Herunterladen.")
         except pytube.exceptions.RegexMatchError as r:
             error_field['text'] = update_error_message("Eingabe konnte nicht gelesen werden.")
@@ -117,7 +117,7 @@ def download_init(url):
             return
         except Exception as e:
             error_field['text'] = update_error_message(e)
-            log(e, "[ERROR]")
+            log(f"Fehler beim Herunterladen {e}.", "[ERROR]")
             download_button['state'] = tk.NORMAL
             url_entry.delete(0, 1000)
             print(e)
