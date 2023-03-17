@@ -32,6 +32,7 @@ def version_check():
     global os_infos
     # Version check
     time.sleep(2)
+
     version = requests.get("http://api.flocloud.at/youtubeDownload/version")
     if not version.content == b"""{"version":"1.0\\n"}""":
         showinfo(title="Neue Version verfügbar!", message="Eine neue Version steht zum Download zur Verfügung.")
